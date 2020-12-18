@@ -1,0 +1,58 @@
+#-----------------------------------------------------------------------------
+# LZF Config file for compiling against LZF build directory
+#-----------------------------------------------------------------------------
+@PACKAGE_INIT@
+
+string(TOUPPER @LZF_PACKAGE@ LZF_PACKAGE_NAME)
+
+set (${LZF_PACKAGE_NAME}_VALID_COMPONENTS static shared)
+
+#-----------------------------------------------------------------------------
+# User Options
+#-----------------------------------------------------------------------------
+set (${LZF_PACKAGE_NAME}_BUILD_SHARED_LIBS    @BUILD_SHARED_LIBS@)
+set (${LZF_PACKAGE_NAME}_EXPORT_LIBRARIES     @LZF_LIBRARIES_TO_EXPORT@)
+
+#-----------------------------------------------------------------------------
+# Directories
+#-----------------------------------------------------------------------------
+set (${LZF_PACKAGE_NAME}_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+set (${LZF_PACKAGE_NAME}_SHARE_DIR "@PACKAGE_SHARE_INSTALL_DIR@")
+set_and_check (${LZF_PACKAGE_NAME}_BUILD_DIR "@PACKAGE_CURRENT_BUILD_DIR@")
+
+#-----------------------------------------------------------------------------
+# Version Strings
+#-----------------------------------------------------------------------------
+set (${LZF_PACKAGE_NAME}_VERSION_STRING @LZF_VERSION_STRING@)
+set (${LZF_PACKAGE_NAME}_VERSION_MAJOR  @LZF_VERSION_MAJOR@)
+set (${LZF_PACKAGE_NAME}_VERSION_MINOR  @LZF_VERSION_MINOR@)
+
+#-----------------------------------------------------------------------------
+# Don't include targets if this file is being picked up by another
+# project which has already build LZF as a subproject
+#-----------------------------------------------------------------------------
+if (NOT TARGET "@LZF_PACKAGE@")
+  include (@PACKAGE_SHARE_INSTALL_DIR@/@LZF_PACKAGE@@LZF_PACKAGE_EXT@-targets.cmake)
+endif ()
+
+# Handle default component(static) :
+if (NOT ${LZF_PACKAGE_NAME}_FIND_COMPONENTS)
+    set (${LZF_PACKAGE_NAME}_FIND_COMPONENTS static)
+    set (${LZF_PACKAGE_NAME}_FIND_REQUIRED_static true)
+endif ()
+
+# Handle requested components:
+list (REMOVE_DUPLICATES ${LZF_PACKAGE_NAME}_FIND_COMPONENTS)
+foreach (comp IN LISTS ${LZF_PACKAGE_NAME}_FIND_COMPONENTS)
+    list (FIND ${LZF_PACKAGE_NAME}_EXPORT_LIBRARIES "@LZF_LIB_CORENAME@-${comp}" HAVE_COMP) 
+    if (${HAVE_COMP} LESS 0) 
+      set (${LZF_PACKAGE_NAME}_${comp}_FOUND 0)
+    else ()
+      set (${LZF_PACKAGE_NAME}_${comp}_FOUND 1)
+      string(TOUPPER ${LZF_PACKAGE_NAME}_${comp}_LIBRARY COMP_LIBRARY)
+      set (${COMP_LIBRARY} ${${COMP_LIBRARY}} @LZF_LIB_CORENAME@-${comp})
+    endif ()
+endforeach()
+
+check_required_components(${LZF_PACKAGE_NAME})

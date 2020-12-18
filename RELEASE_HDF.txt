@@ -1,0 +1,13 @@
+                      HDF Group Release notes for LZF 3.6
+                          Aug 3, 2017
+
+HDF changes:
+   -- Remove files not used by HDF distribution
+
+   -- CMake support added (CMakeLists.txt, and config/cmake folder), which allows for shared and/or static builds.
+      No files were altered.
+
+User support:
+    Report all problems with this distribution to help@hdfgroup.org.
+    For more information on LZF, see:
+        http://www.h5py.org/
